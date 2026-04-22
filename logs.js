@@ -8,18 +8,18 @@ function formatTime(isoString) {
 
     // 如果是今天
     if (date.toDateString() === now.toDateString()) {
-        return date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        return date.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
     }
 
     // 如果是昨天
     const yesterday = new Date(now);
     yesterday.setDate(yesterday.getDate() - 1);
     if (date.toDateString() === yesterday.toDateString()) {
-        return '昨天 ' + date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+        return 'Hôm qua ' + date.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
     }
 
     // 其他日期
-    return date.toLocaleString('zh-CN', {
+    return date.toLocaleString('vi-VN', {
         month: '2-digit',
         day: '2-digit',
         hour: '2-digit',
@@ -35,7 +35,7 @@ function renderLogs(logs) {
         container.innerHTML = `
             <div class="empty-state">
                 <div class="empty-state-icon">📝</div>
-                <div>暂无日志记录</div>
+                <div>Không có bản ghi nhật ký nào</div>
             </div>
         `;
         return;
@@ -68,7 +68,7 @@ async function loadLogs() {
             document.getElementById('logsContainer').innerHTML = `
                 <div class="empty-state">
                     <div class="empty-state-icon">❌</div>
-                    <div>加载日志失败</div>
+                    <div>Tải nhật ký thất bại</div>
                 </div>
             `;
         }
@@ -77,7 +77,7 @@ async function loadLogs() {
 
 // 清空日志
 async function clearLogs() {
-    if (!confirm('确定要清空所有日志吗？')) {
+    if (!confirm('Bạn có chắc chắn muốn xóa tất cả nhật ký không?')) {
         return;
     }
 

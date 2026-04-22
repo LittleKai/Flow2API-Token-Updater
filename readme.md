@@ -1,27 +1,27 @@
-# 使用说明
+# Hướng dẫn sử dụng
 
-需要配合 [Flow2api](https://github.com/TheSmallHanCat/flow2api) 服务使用。
+Cần sử dụng kết hợp với dịch vụ [Flow2api](https://github.com/TheSmallHanCat/flow2api).
 
-## 一、 安装步骤
+## I. Các bước cài đặt
 
-1.  **打开扩展程序页面**
-    在 Chrome 浏览器地址栏输入并访问：
+1.  **Mở trang Tiện ích mở rộng (Extensions)**
+    Nhập vào thanh địa chỉ của trình duyệt Chrome và truy cập:
     `chrome://extensions/`
 
-2.  **开启开发者模式**
-    点击页面右上角的 **“开发者模式”** 开关。
-    ![开启开发者模式](image.png)
+2.  **Bật Chế độ dành cho nhà phát triển (Developer mode)**
+    Nhấp vào công tắc **"Chế độ dành cho nhà phát triển"** ở góc trên cùng bên phải trang.
+    ![Bật chế độ dành cho Nhà phát triển](images/image.png)
 
-3.  **载入插件**
-    将解压后的插件目录直接 **拖拽** 到浏览器页面中，或点击“加载已解压的扩展程序”选择该目录。
-    ![安装插件](image-1.png)
+3.  **Tải tiện ích**
+    Trực tiếp **kéo và thả** thư mục tiện ích đã giải nén vào trang trình duyệt, hoặc nhấp vào "Tải tiện ích đã giải nén" (Load unpacked) và chọn thư mục đó.
+    ![Cài đặt tiện ích](images/image-1.png)
 
-## 二、 配置指南
+## II. Hướng dẫn cấu hình
 
-1.  **设置接口与 Token**
-    点击插件图标，在弹出窗口中配置 **连接接口 (API URL)** 和 **连接 Token**，时间默认60分钟，一般情况下建议6小时左右即可。
-    ![配置界面](image-2.png)
+1.  **Thiết lập API URL và Token**
+    Nhấp vào biểu tượng tiện ích, trong cửa sổ hiện lên, hãy điền **Giao diện kết nối (API URL)** và **Token kết nối**. Thời gian (TTL) mặc định là 60 phút, khuyến nghị nên điền khoảng 6 giờ là đủ.
+    ![Giao diện cấu hình](images/image-2.png)
 
-2.  **获取配置信息**
-    如果您不知道如何填写，请登录 **Flow2api 后台** 查看相关的接口地址和访问密钥。
-    ![后台查看配置](image-3.png)
+2.  **Lấy thông tin cấu hình**
+    Nếu bạn không biết cách điền, vui lòng đăng nhập vào **trang quản trị (backend) của Flow2api** để xem địa chỉ API và khóa truy cập (Access Key) tương ứng.
+    ![Xem cấu hình trong trang quản trị](images/image-3.png)

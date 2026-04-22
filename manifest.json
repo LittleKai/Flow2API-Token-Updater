@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Flow2API Token Updater",
   "version": "1.0.0",
-  "description": "自动提取Google Labs cookie并更新到Flow2API系统",
+  "description": "Automatically extract Google Labs cookie and update to Flow2API system",
   "permissions": [
     "cookies",
     "alarms",
@@ -20,14 +20,14 @@
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
-      "16": "icon16.png",
-      "48": "icon48.png",
-      "128": "icon128.png"
+      "16": "images/icon16.png",
+      "48": "images/icon48.png",
+      "128": "images/icon128.png"
     }
   },
   "icons": {
-    "16": "icon16.png",
-    "48": "icon48.png",
-    "128": "icon128.png"
+    "16": "images/icon16.png",
+    "48": "images/icon48.png",
+    "128": "images/icon128.png"
   }
 }

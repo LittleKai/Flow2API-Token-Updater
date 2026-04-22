@@ -1,9 +1,9 @@
-// background.js - Chrome扩展后台脚本
+// background.js - Script chạy ngầm của Chrome Extension
 
-// 定时器名称
+// Tên bộ đếm thời gian
 const ALARM_NAME = 'tokenRefresh';
 
-// 日志系统
+// Hệ thống log
 const Logger = {
     async log(level, message, details = null) {
         const timestamp = new Date().toISOString();
@@ -16,11 +16,11 @@ const Logger = {
 
         console.log(`[${level}] ${message}`, details || '');
 
-        // 存储到chrome.storage.local（单次会话有效）
+        // Lưu vào chrome.storage.local (chỉ có hiệu lực trong phiên hiện tại)
         const { logs = [] } = await chrome.storage.local.get(['logs']);
-        logs.unshift(logEntry); // 最新的在前面
+        logs.unshift(logEntry); // Mới nhất ở đầu
 
-        // 只保留最近50条日志
+        // Chỉ giữ lại 50 log gần nhất
         if (logs.length > 50) {
             logs.splice(50);
         }
@@ -50,35 +50,35 @@ const Logger = {
     }
 };
 
-// 初始化：设置定时器
+// Khởi tạo: thiết lập bộ đếm thời gian
 chrome.runtime.onInstalled.addListener(async () => {
     await Logger.info('Flow2API Token Updater installed');
     await setupAlarm();
 });
 
-// 监听来自popup的消息
+// Lắng nghe tin nhắn từ popup
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === 'updateConfig') {
-        // 更新配置后重新设置定时器
+        // Khởi động lại bộ đếm sau khi cập nhật cấu hình
         setupAlarm().then(async () => {
             await Logger.info('Config updated, alarm reset');
         });
     } else if (request.action === 'testNow') {
-        // 立即执行一次
+        // Thực thi ngay lập tức một lần
         extractAndSendToken().then((result) => {
             sendResponse(result);
         }).catch((error) => {
             sendResponse({ success: false, error: error.message });
         });
-        return true; // 保持消息通道开启
+        return true; // Giữ kênh tin nhắn mở
     } else if (request.action === 'getLogs') {
-        // 获取日志
+        // Lấy log
         Logger.getLogs().then((logs) => {
             sendResponse({ success: true, logs });
         });
         return true;
     } else if (request.action === 'clearLogs') {
-        // 清除日志
+        // Xóa log
         Logger.clearLogs().then(() => {
             sendResponse({ success: true });
         });
@@ -86,44 +86,44 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }
 });
 
-// 监听定时器触发
+// Lắng nghe trigger từ bộ đếm
 chrome.alarms.onAlarm.addListener(async (alarm) => {
     if (alarm.name === ALARM_NAME) {
         await Logger.info('Alarm triggered, extracting token...');
         const result = await extractAndSendToken();
 
-        // 发送通知
+        // Gửi thông báo
         if (result.success) {
-            const title = result.action === 'updated' ? '✅ Token已更新' : '✅ Token已添加';
-            const message = result.displayMessage || result.message || 'Token已成功同步到Flow2API';
+            const title = result.action === 'updated' ? '✅ Token Đã Cập Nhật' : '✅ Token Đã Thêm';
+            const message = result.displayMessage || result.message || 'Token đã được đồng bộ hóa thành công đến Flow2API';
 
             chrome.notifications.create({
                 type: 'basic',
-                iconUrl: 'icon48.png',
+                iconUrl: 'images/icon48.png',
                 title: title,
                 message: message
             });
         } else {
             chrome.notifications.create({
                 type: 'basic',
-                iconUrl: 'icon48.png',
-                title: '❌ Token同步失败',
-                message: result.error || '未知错误'
+                iconUrl: 'images/icon48.png',
+                title: '❌ Đồng Bộ Token Thất Bại',
+                message: result.error || 'Lỗi không xác định'
             });
         }
     }
 });
 
-// 设置定时器
+// Thiết lập bộ đếm thời gian
 async function setupAlarm() {
-    // 清除旧的定时器
+    // Xóa bộ đếm cũ
     await chrome.alarms.clear(ALARM_NAME);
 
-    // 获取配置
+    // Lấy cấu hình
     const config = await chrome.storage.sync.get(['refreshInterval']);
     const intervalMinutes = config.refreshInterval || 60;
 
-    // 创建新的定时器
+    // Tạo bộ đếm mới
     chrome.alarms.create(ALARM_NAME, {
         periodInMinutes: intervalMinutes
     });
@@ -131,33 +131,33 @@ async function setupAlarm() {
     await Logger.info(`Alarm set to ${intervalMinutes} minutes`);
 }
 
-// 提取cookie并发送到服务器
+// Trích xuất cookie và gửi đến máy chủ
 async function extractAndSendToken() {
     let tab = null;
 
     try {
-        await Logger.info('开始提取Token...');
+        await Logger.info('Bắt đầu trích xuất Token...');
 
-        // 获取配置
+        // Lấy cấu hình
         const config = await chrome.storage.sync.get(['apiUrl', 'connectionToken']);
 
         if (!config.apiUrl || !config.connectionToken) {
-            await Logger.error('配置未设置');
-            return { success: false, error: '配置未设置' };
+            await Logger.error('Chưa thiết lập cấu hình');
+            return { success: false, error: 'Chưa thiết lập cấu hình' };
         }
 
-        await Logger.info('配置已加载', { apiUrl: config.apiUrl });
+        await Logger.info('Đã tải cấu hình', { apiUrl: config.apiUrl });
 
-        // 1. 打开Google Labs页面（在后台）
-        await Logger.info('正在打开Google Labs页面...');
+        // 1. Mở trang Google Labs (trong nền)
+        await Logger.info('Đang mở trang Google Labs...');
         tab = await chrome.tabs.create({
             url: 'https://labs.google/fx/vi/tools/flow',
             active: false
         });
 
-        await Logger.info('页面已创建，等待加载...', { tabId: tab.id });
+        await Logger.info('Trang đã được tạo, đang chờ tải...', { tabId: tab.id });
 
-        // 等待页面完全加载
+        // Chờ trang tải hoàn tất
         await new Promise((resolve) => {
             const listener = (tabId, changeInfo) => {
                 if (tabId === tab.id && changeInfo.status === 'complete') {
@@ -168,52 +168,52 @@ async function extractAndSendToken() {
             chrome.tabs.onUpdated.addListener(listener);
         });
 
-        await Logger.info('页面加载完成，等待JavaScript执行...');
+        await Logger.info('Trang đã tải xong, đợi thực thi JavaScript...');
 
-        // 增加等待时间到5秒，确保JavaScript完全执行
+        // Tăng thời gian chờ lên 5 giây để đảm bảo JavaScript thực thi xong
         await new Promise(resolve => setTimeout(resolve, 5000));
 
-        await Logger.info('开始提取Cookies...');
+        await Logger.info('Bắt đầu trích xuất Cookies...');
 
-        // 2. 获取session-token
+        // 2. Lấy session-token
         let sessionToken = null;
         let allCookiesFound = [];
 
-        // 尝试获取所有google相关的cookies
+        // Thử lấy tất cả các cookie liên quan đến google
         try {
-            // 方法1: 获取当前标签页的所有cookies
+            // Cách 1: lấy toàn bộ cookie của tab hiện tại
             const tabCookies = await chrome.cookies.getAll({ url: 'https://labs.google/fx/vi/tools/flow' });
             allCookiesFound.push(...tabCookies);
-            await Logger.info(`从标签页URL找到 ${tabCookies.length} 个cookies`);
+            await Logger.info(`Tìm thấy ${tabCookies.length} cookie từ URL của tab`);
 
-            // 方法2: 获取labs.google域名下的所有cookies
+            // Cách 2: lấy toàn bộ cookie của tên miền labs.google
             const labsCookies = await chrome.cookies.getAll({ domain: 'labs.google' });
             allCookiesFound.push(...labsCookies);
-            await Logger.info(`从labs.google域名找到 ${labsCookies.length} 个cookies`);
+            await Logger.info(`Tìm thấy ${labsCookies.length} cookie từ tên miền labs.google`);
 
-            // 方法3: 获取.google.com域名下的所有cookies
+            // Cách 3: lấy toàn bộ cookie của tên miền .google.com
             const googleCookies = await chrome.cookies.getAll({ domain: '.google.com' });
             allCookiesFound.push(...googleCookies);
-            await Logger.info(`从.google.com域名找到 ${googleCookies.length} 个cookies`);
+            await Logger.info(`Tìm thấy ${googleCookies.length} cookie từ tên miền .google.com`);
 
         } catch (err) {
-            await Logger.error('获取cookies失败', { error: err.message });
+            await Logger.error('Lấy cookies thất bại', { error: err.message });
         }
 
-        // 去重所有找到的cookies
+        // Loại bỏ các cookie trùng lặp
         const uniqueCookies = Array.from(
             new Map(allCookiesFound.map(c => [c.name + c.domain, c])).values()
         );
 
-        await Logger.info(`总共找到 ${uniqueCookies.length} 个唯一cookies`, {
+        await Logger.info(`Tổng cộng tìm thấy ${uniqueCookies.length} cookie duy nhất`, {
             cookieNames: uniqueCookies.map(c => ({ name: c.name, domain: c.domain }))
         });
 
-        // 查找session-token
+        // Tìm kiếm session-token
         for (const cookie of uniqueCookies) {
             if (cookie.name === '__Secure-next-auth.session-token' && !sessionToken) {
                 sessionToken = cookie.value;
-                await Logger.success('找到session-token', {
+                await Logger.success('Đã tìm thấy session-token', {
                     domain: cookie.domain,
                     path: cookie.path,
                     length: sessionToken.length
@@ -222,14 +222,14 @@ async function extractAndSendToken() {
             }
         }
 
-        // 关闭标签页
+        // Đóng tab
         if (tab) {
             await chrome.tabs.remove(tab.id);
-            await Logger.info('标签页已关闭');
+            await Logger.info('Đã đóng tab');
         }
 
         if (!sessionToken) {
-            await Logger.error('未找到session-token', {
+            await Logger.error('Không tìm thấy session-token', {
                 foundCookies: uniqueCookies.map(c => ({
                     name: c.name,
                     domain: c.domain
@@ -238,14 +238,14 @@ async function extractAndSendToken() {
 
             return {
                 success: false,
-                error: '未找到session-token。请确保已登录Google Labs。'
+                error: 'Không tìm thấy session-token. Vui lòng đảm bảo bạn đã đăng nhập vào Google Labs.'
             };
         }
 
-        await Logger.info('Session-token提取成功', { tokenLength: sessionToken.length });
+        await Logger.info('Trích xuất Session-token thành công', { tokenLength: sessionToken.length });
 
-        // 4. 发送到服务器
-        await Logger.info('正在发送到服务器...');
+        // 4. Gửi đến máy chủ
+        await Logger.info('Đang gửi đến máy chủ...');
 
         const response = await fetch(config.apiUrl, {
             method: 'POST',
@@ -260,51 +260,51 @@ async function extractAndSendToken() {
 
         if (!response.ok) {
             const errorText = await response.text();
-            await Logger.error('服务器错误', {
+            await Logger.error('Lỗi máy chủ', {
                 status: response.status,
                 error: errorText
             });
-            return { success: false, error: `服务器错误: ${response.status}` };
+            return { success: false, error: `Lỗi máy chủ: ${response.status}` };
         }
 
         const result = await response.json();
 
-        // 根据action显示不同的日志信息
+        // Hiển thị các thông báo log khác nhau dựa trên action
         if (result.action === 'updated') {
-            await Logger.success('✅ Token已更新到上游', {
-                action: '更新现有Token',
+            await Logger.success('✅ Token đã được cập nhật lên máy chủ', {
+                action: 'Cập nhật Token hiện tại',
                 message: result.message
             });
         } else if (result.action === 'added') {
-            await Logger.success('✅ Token已添加到上游', {
-                action: '添加新Token',
+            await Logger.success('✅ Token đã được thêm lên máy chủ', {
+                action: 'Thêm Token mới',
                 message: result.message
             });
         } else {
-            await Logger.success('✅ Token已同步到上游', result);
+            await Logger.success('✅ Token đã được đồng bộ lên máy chủ', result);
         }
 
         return {
             success: true,
-            message: result.message || 'Token更新成功',
+            message: result.message || 'Cập nhật Token thành công',
             action: result.action,
             displayMessage: result.action === 'updated'
-                ? `✅ 成功更新到上游\n${result.message}`
-                : `✅ 成功添加到上游\n${result.message}`
+                ? `✅ Cập nhật thành công lên máy chủ\n${result.message}`
+                : `✅ Thêm mới thành công lên máy chủ\n${result.message}`
         };
 
     } catch (error) {
-        await Logger.error('提取过程出错', {
+        await Logger.error('Lỗi trong quá trình trích xuất', {
             error: error.message,
             stack: error.stack
         });
 
-        // 确保关闭标签页
+        // Đảm bảo tab đã được đóng
         if (tab) {
             try {
                 await chrome.tabs.remove(tab.id);
             } catch (e) {
-                // 忽略关闭标签页的错误
+                // Bỏ qua lỗi khi đóng tab
             }
         }
 

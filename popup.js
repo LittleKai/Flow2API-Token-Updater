@@ -21,12 +21,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         const refreshInterval = parseInt(document.getElementById('refreshInterval').value);
 
         if (!apiUrl || !connectionToken) {
-            showStatus('请填写完整的配置信息', 'error');
+            showStatus('Vui lòng điền đầy đủ thông tin cấu hình', 'error');
             return;
         }
 
         if (refreshInterval < 1 || refreshInterval > 1440) {
-            showStatus('刷新间隔必须在1-1440分钟之间', 'error');
+            showStatus('Thời gian làm mới phải từ 1-1440 phút', 'error');
             return;
         }
 
@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             config: { apiUrl, connectionToken, refreshInterval }
         });
 
-        showStatus('配置保存成功！', 'success');
+        showStatus('Lưu cấu hình thành công!', 'success');
     });
 
     // 立即测试
@@ -52,11 +52,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         const connectionToken = document.getElementById('connectionToken').value.trim();
 
         if (!apiUrl || !connectionToken) {
-            showStatus('请先填写并保存配置', 'error');
+            showStatus('Vui lòng điền và lưu cấu hình trước', 'error');
             return;
         }
 
-        showStatus('正在测试连接...', 'info');
+        showStatus('Đang kiểm tra kết nối...', 'info');
 
         // 通知background script立即执行一次
         chrome.runtime.sendMessage({
@@ -66,15 +66,15 @@ document.addEventListener('DOMContentLoaded', async () => {
                 // 根据action显示不同的成功信息
                 let statusMessage = '';
                 if (response.action === 'updated') {
-                    statusMessage = `✅ 测试成功！Token已更新到上游\n${response.message}`;
+                    statusMessage = `✅ Kiểm tra thành công! Token đã được cập nhật\n${response.message}`;
                 } else if (response.action === 'added') {
-                    statusMessage = `✅ 测试成功！Token已添加到上游\n${response.message}`;
+                    statusMessage = `✅ Kiểm tra thành công! Token đã được thêm\n${response.message}`;
                 } else {
-                    statusMessage = `✅ 测试成功！${response.message}`;
+                    statusMessage = `✅ Kiểm tra thành công! ${response.message}`;
                 }
                 showStatus(statusMessage, 'success');
             } else {
-                showStatus(`❌ 测试失败：${response ? response.error : '未知错误'}`, 'error');
+                showStatus(`❌ Kiểm tra thất bại: ${response ? response.error : 'Lỗi không xác định'}`, 'error');
             }
         });
     });

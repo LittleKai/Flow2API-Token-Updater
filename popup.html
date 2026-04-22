@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -121,30 +121,30 @@
     <h1>🔄 Flow2API Token Updater</h1>
 
     <div class="form-group">
-        <label for="apiUrl">连接接口</label>
+        <label for="apiUrl">Giao diện kết nối (API URL)</label>
         <input type="text" id="apiUrl" placeholder="http://127.0.0.1:8000/api/plugin/update-token">
-        <div class="hint">从Flow2API管理后台的"插件连接配置"中复制</div>
+        <div class="hint">Sao chép phần cấu hình từ trang quản trị Flow2API</div>
     </div>
 
     <div class="form-group">
-        <label for="connectionToken">连接Token</label>
-        <input type="text" id="connectionToken" placeholder="输入连接Token">
-        <div class="hint">从Flow2API管理后台的"插件连接配置"中复制</div>
+        <label for="connectionToken">Token kết nối</label>
+        <input type="text" id="connectionToken" placeholder="Nhập Token kết nối">
+        <div class="hint">Sao chép phần cấu hình từ trang quản trị Flow2API</div>
     </div>
 
     <div class="form-group">
-        <label for="refreshInterval">刷新间隔（分钟）</label>
+        <label for="refreshInterval">Thời gian làm mới (phút)</label>
         <input type="number" id="refreshInterval" value="60" min="1" max="1440">
-        <div class="hint">建议设置为60分钟（1小时）</div>
+        <div class="hint">Khuyến nghị: 60 phút (1 giờ)</div>
     </div>
 
     <div class="button-group">
-        <button class="btn-primary" id="saveBtn">保存配置</button>
-        <button class="btn-secondary" id="testBtn">立即测试</button>
+        <button class="btn-primary" id="saveBtn">Lưu Cấu Hình</button>
+        <button class="btn-secondary" id="testBtn">Kiểm Tra Ngay</button>
     </div>
 
     <div class="button-group">
-        <button class="btn-secondary" id="logsBtn" style="width: 100%;">📋 查看日志</button>
+        <button class="btn-secondary" id="logsBtn" style="width: 100%;">📋 Xem Nhật Ký</button>
     </div>
 
     <div class="status" id="status"></div>
@@ -152,11 +152,11 @@
     <div class="divider"></div>
 
     <div class="info-section">
-        <strong>📌 使用说明：</strong><br>
-        1. 在Flow2API管理后台获取连接接口和Token<br>
-        2. 填写配置并保存<br>
-        3. 插件将自动定时提取Google Labs的cookie<br>
-        4. 提取的cookie会自动更新到Flow2API系统
+        <strong>📌 Hướng dẫn:</strong><br>
+        1. Lấy API URL và Token từ trang quản trị Flow2API<br>
+        2. Điền thông tin cấu hình và lưu lại<br>
+        3. Tiện ích sẽ tự động trích xuất cookie Google Labs định kỳ<br>
+        4. Cookie được trích xuất sẽ tự động được cập nhật lên hệ thống Flow2API
     </div>
 
     <script src="popup.js"></script>
